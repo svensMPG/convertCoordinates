@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "C:\\Users\\svschneider\\Anaconda3\\python.exe",
+    "python.analysis.disabled": ["DeprecationWarning"]
+}
