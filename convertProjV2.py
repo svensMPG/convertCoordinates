@@ -32,7 +32,7 @@ def transf(epsgIn, epsgOut, coor, dims):
     
     return out
 
-inputFile = "myData.txt"
+inputFile = "polylines_with_velocity_GK.csv"
 outputFile = "transformed_" + inputFile
 epsgIn = 'epsg:31467' # DHDN GK zone 3
 epsgOut = 'epsg:4326' # WGS84

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from pyproj import Proj, transform
+from pyproj import Transformer
 
 
 class Coords():
@@ -18,21 +18,7 @@ class Coords():
         self.z = z
 
 
-def transf(epsgIn, epsgOut, coor, dims):
-    # inProj = Proj(init='epsg:3857')
-    inProj = Proj(epsgIn)
-    outProj = Proj(epsgOut)
-    # outProj = Proj(init='epsg:4326')
-    x, y, z = coor.getCoords()
-    if dims == 3:
-        out = transform(inProj, outProj, round(x,6), round(y,6), round(z,6))
-    else:
-        out = transform(inProj, outProj, round(x,6), round(y,6))
-
-    return out
-
-
-inputFile = "debugData.txt"
+inputFile = "polylines_with_velocity_GK.csv"
 outputFile = "transformed_" + inputFile
 epsgIn = 'epsg:31467'  # DHDN GK zone 3
 epsgOut = 'epsg:4326'  # WGS84
@@ -44,11 +30,23 @@ npd = data.to_numpy()
 w = open(outputFile, "w", 16000000)
 tmpString = ""
 l = len(npd[1])
+transformer = Transformer.from_crs(epsgIn, epsgOut)
+
 for i in range(len(npd)):
     # x and y are exchanged because DHDN uses Northing (y) and Easting (x)
     C = Coords(npd[i][1], npd[i][0], npd[i][2])
-    c = transf(epsgIn, epsgOut, C, outputDims)
-    # tmpString = str(c[0]) + " " + str(c[1]) + "\n"
+       
+    if outputDims == 3:        
+        c = transformer.transform(C.x,C.y,C.z)
+    else:        
+        c = transformer.transform(C.x,C.y)
+
+
+    if l == 9:
+        tmpString = str(c[1]) + "," + str(c[0]) + "," + str(C.z) + "," + str(npd[i][3]) + \
+            "," + str(npd[i][4]) + "," + str(npd[i][5]) + \
+            "," + str(npd[i][6]) + "," + str(npd[i][7]) + "," + str(npd[i][8]) + "\n"
+
     if l == 7:
         tmpString = str(c[1]) + "," + str(c[0]) + "," + str(C.z) + "," + str(npd[i][3]) + \
             "," + str(npd[i][4]) + "," + str(npd[i][5]) + \
